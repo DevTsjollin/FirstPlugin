@@ -1,0 +1,11 @@
+name: FirstPlugin
+version: '${project.version}'
+main: me.tsjollin.firstplugin.Main
+api-version: 1.19
+authors: [ Tsjollin ]
+description: First Plugin
+commands:
+  kingdom:
+    description: Kingdom shit
+    usage: /<command>
+    aliases: k
