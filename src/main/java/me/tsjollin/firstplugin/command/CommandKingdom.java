@@ -2,6 +2,9 @@ package me.tsjollin.firstplugin.command;
 
 import me.tsjollin.firstplugin.C;
 import me.tsjollin.firstplugin.Main;
+import me.tsjollin.firstplugin.database.KingdomManager;
+import me.tsjollin.firstplugin.entity.Kingdom;
+import me.tsjollin.firstplugin.entity.PlatformPlayer;
 import me.tsjollin.firstplugin.util.Teleporter;
 import me.tsjollin.firstplugin.util.Utils;
 import org.bukkit.*;
@@ -72,9 +75,9 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             return;
         }
 
-        String kingdom = args[1].toLowerCase();
-        if (Main.getKDDatabase().kingdomExists(kingdom)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &calready exists!"));
+        String kingdomName = args[1].toLowerCase();
+        if (KingdomManager.kingdomExists(kingdomName)) {
+            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &calready exists!"));
             return;
         }
 
@@ -83,9 +86,9 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             return;
         }
 
-        sender.sendMessage(C.TAC("&aSuccessfully created kingdom: &2" + kingdom + "&a!"));
+        sender.sendMessage(C.TAC("&aSuccessfully created kingdom: &2" + kingdomName + "&a!"));
 
-        Main.getKDDatabase().createKingdom(kingdom);
+        KingdomManager.createKingdom(kingdomName);
     }
     private static void deleteKingdom(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
@@ -102,7 +105,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
 
             String kingdom = confirmDeleteKingdomList.get(player.getUniqueId());
 
-            if (!Main.getKDDatabase().kingdomExists(kingdom)) {
+            if (!KingdomManager.kingdomExists(kingdom)) {
                 sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist anymore!"));
                 return;
             }
@@ -110,11 +113,11 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             confirmDeleteKingdomList.remove(player.getUniqueId());
             sender.sendMessage(C.TAC("&aSuccessfully deleted kingdom: &2" + kingdom + "&a!"));
 
-            Main.getKDDatabase().deleteKingdom(kingdom);
+            KingdomManager.deleteKingdom(kingdom);
         } else {
             String kingdom = args[1].toLowerCase();
 
-            if (!Main.getKDDatabase().kingdomExists(kingdom)) {
+            if (!KingdomManager.kingdomExists(kingdom)) {
                 sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
                 return;
             }
@@ -131,7 +134,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         }
     }
     private static void listKingdoms(CommandSender sender) {
-        List<String> kingdoms = Main.getKDDatabase().getKingdoms();
+        List<String> kingdoms = KingdomManager.getKingdoms();
         String kingdomList = "";
 
         if (kingdoms.isEmpty()) {
@@ -151,47 +154,43 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
     }
     private static void joinKingdom(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
         String UUID = player.getUniqueId().toString();
-
         if (args.length <= 1) {
             sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " join <name>"));
             return;
         }
 
-        String kingdom = args[1].toLowerCase();
-        if (Main.getKDDatabase().isInKingdom(UUID)) {
+        String kingdomName = args[1].toLowerCase();
+        if (platformPlayer.isInKingdom()) {
             sender.sendMessage(C.TAC("&aYou are already in a kingdom!"));
             return;
         }
 
-        if (!Main.getKDDatabase().kingdomExists(kingdom)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
+        if (!KingdomManager.kingdomExists(kingdomName)) {
+            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
-        if (!Main.getKDDatabase().getInviteOnly(kingdom)) { // and has no invite
-            sender.sendMessage(C.TAC("&aYou need an invite to join &2" + kingdom + "&a!"));
+        Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
+        if (kingdom.isInviteOnly()) { // and has no invite
+            sender.sendMessage(C.TAC("&aYou need an invite to join &2" + kingdomName + "&a!"));
             return;
         }
-
-        int kingdomId = Main.getKDDatabase().getKingdomId(kingdom);
-        sender.sendMessage(C.TAC("&aYou joined: &2" + kingdom + "&a!"));
-
-        Main.getKDDatabase().setKingdom(UUID, kingdomId);
+        sender.sendMessage(C.TAC("&aYou joined: &2" + kingdomName + "&a!"));
+        platformPlayer.setKingdom(kingdom.getId());
     }
     private static void leaveKingdom(CommandSender sender) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
-        String oldKingdom = Main.getKDDatabase().getPlayerKingdomName(UUID);
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
-        if (!Main.getKDDatabase().isInKingdom(UUID)) {
+        if (!platformPlayer.isInKingdom()) {
             sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
             return;
         }
 
-        sender.sendMessage(C.TAC("&aYou left: &2" + oldKingdom + "&a!"));
-
-        Main.getKDDatabase().setKingdom(UUID, null);
+        sender.sendMessage(C.TAC("&aYou left: &2" + platformPlayer.getKingdom().getName() + "&a!"));
+        platformPlayer.setKingdom(null);
     }
     private static void renameKingdom(CommandSender sender, String alias, String[] args) {
         if (args.length <= 2) {
@@ -199,15 +198,16 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             return;
         }
 
-        String kingdom = args[1].toLowerCase();
-        if (!Main.getKDDatabase().kingdomExists(kingdom)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
+        String kingdomName = args[1].toLowerCase();
+
+        if (!KingdomManager.kingdomExists(kingdomName)) {
+            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
         String newName = args[2].toLowerCase();
-        if (Main.getKDDatabase().kingdomExists(newName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &calready exists!"));
+        if (KingdomManager.kingdomExists(newName)) {
+            sender.sendMessage(C.TAC("&cThe kingdom &4" + newName + " &calready exists!"));
             return;
         }
 
@@ -216,75 +216,67 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             return;
         }
 
-        int kingdomId = Main.getKDDatabase().getKingdomId(kingdom);
-        sender.sendMessage(C.TAC("&aRenamed the kingdom: &2" + kingdom + " &ato &2" + newName +"&a!"));
-
-        Main.getKDDatabase().renameKingdom(kingdomId, newName);
+        Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
+        sender.sendMessage(C.TAC("&aRenamed the kingdom: &2" + kingdom.getName() + " &ato &2" + newName +"&a!"));
+        kingdom.renameKingdom(newName);
     }
 
     private static void setKingdomSpawn(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
         String UUID = player.getUniqueId().toString();
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
         if (args.length <= 1) {
             sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " setspawn <name>"));
             return;
         }
 
-        if (!Main.getKDDatabase().isInKingdom(UUID)) {
-            sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
+        String kingdomName = args[1].toLowerCase();
+        if (!KingdomManager.kingdomExists(kingdomName)) {
+            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
-        String kingdom = args[1].toLowerCase();
-        if (!Main.getKDDatabase().kingdomExists(kingdom)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
-            return;
-        }
         Location location = Utils.roundLocation(player.getLocation());
-        int kingdomId = Main.getKDDatabase().getKingdomId(kingdom);
+        Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
 
-        sender.sendMessage(C.TAC("&aYou changed the spawn of: &2" + kingdom + "&a to &2" + location.getX() + ", " + location.getY() + ", " + location.getZ() +"&a!"));
-        Main.getKDDatabase().setKingdomSpawn(kingdomId, location);
+        sender.sendMessage(C.TAC("&aYou changed the spawn of: &2" + kingdom.getName() + "&a to &2" + location.getX() + ", " + location.getY() + ", " + location.getZ() +"&a!"));
+        kingdom.setSpawn(location);
     }
     private static void kingdomSpawn(CommandSender sender) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
-        if (!Main.getKDDatabase().isInKingdom(UUID)) {
+        if (!platformPlayer.isInKingdom()) {
             sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
             return;
         }
 
-        Integer kingdomId = Main.getKDDatabase().getPlayerKingdom(UUID);
-        String kingdom = Main.getKDDatabase().getKingdomName(kingdomId);
-        if (Main.getKDDatabase().getKingdomSpawn(kingdomId) == null) {
+        if (platformPlayer.getKingdom().getSpawn() == null) {
             sender.sendMessage(C.TAC("&cThe kingdom spawn has not been setup yet!"));
             return;
         }
 
-        Teleporter.teleportSpawn(player, kingdom, Main.getKConfig().getInt("settings.teleport-delay", 5));
+        Teleporter.teleportSpawn(player, platformPlayer.getKingdom(), Main.getKConfig().getInt("settings.teleport-delay", 5));
     }
     private static void kingdomInfo(CommandSender sender) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
-        if (!Main.getKDDatabase().isInKingdom(UUID)) {
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
+        if (!platformPlayer.isInKingdom()) {
             sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
             return;
         }
-
-        String kingdom = Main.getKDDatabase().getPlayerKingdomName(UUID);
-        sender.sendMessage(kingdom);
+        sender.sendMessage(platformPlayer.getKingdom().getName());
     }
     private static void editKingdom(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
         if (args.length <= 2) {
             sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " edit <option> <value>"));
             return;
         }
 
-        if (!Main.getKDDatabase().isInKingdom(UUID)) {
+        if (!platformPlayer.isInKingdom()) {
             sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
             return;
         }
@@ -302,16 +294,16 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
     }
     private static void editInviteOnly(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
         InviteOnlyValues value = Utils.valueOfFormattedName(args[2], InviteOnlyValues.class);
-        Integer kingdom = Main.getKDDatabase().getPlayerKingdom(UUID);
 
         if (value == null) {
             sender.sendMessage(C.TAC("&4" + args[2] + " &cis not a valid, must be &4true &cor &4false&c!"));
             return;
         }
         sender.sendMessage(C.TAC("&aChanged invite only of your kingdom to &2" + value.toString().toLowerCase() + "&a!"));
-        Main.getKDDatabase().setInviteOnly(kingdom, Boolean.parseBoolean(value.toString().toLowerCase()));
+        platformPlayer.getKingdom().setInviteOnly(Boolean.parseBoolean(value.toString().toLowerCase()));
+
     }
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
@@ -330,10 +322,10 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
                 case JOIN:
                 case SETSPAWN:
                 case RENAME:
-                    return filterStartingWith(args[1], Main.getKDDatabase().getKingdoms());
+                    return filterStartingWith(args[1], KingdomManager.getKingdoms());
                 case DELETE:
                     if (!confirmDeleteKingdomList.containsKey(player.getUniqueId())) {
-                        return filterStartingWith(args[1], Main.getKDDatabase().getKingdoms());
+                        return filterStartingWith(args[1], KingdomManager.getKingdoms());
                     };
                 case EDIT:
                     return filterStartingWith(args[1], Stream.of(EditOperation.VALUES).map(Utils::formattedName));

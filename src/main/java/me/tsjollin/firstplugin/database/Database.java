@@ -190,40 +190,14 @@ public abstract class Database {
         }
         return null;
     }
-    public String getPlayerKingdomName(String id) {
+    public Integer getPlayerKingdom(String UUID) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
             ps = conn.prepareStatement("SELECT kingdom_id FROM players WHERE id = ?");
-            ps.setString(1, id);
-            rs = ps.executeQuery();
-            if ((Integer)rs.getInt(1) != null) {
-                return getKingdomName(rs.getInt(1));
-            }
-        } catch (SQLException ex) {
-            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
-        } finally {
-            try {
-                if (ps != null)
-                    ps.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
-        }
-        return null;
-    }
-    public Integer getPlayerKingdom(String id) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT kingdom_id FROM players WHERE id = ?");
-            ps.setString(1, id);
+            ps.setString(1, UUID);
             rs = ps.executeQuery();
             return (Integer)rs.getInt(1);
         } catch (SQLException ex) {
@@ -444,14 +418,14 @@ public abstract class Database {
         }
         return;
     }
-    public Boolean getInviteOnly(String name) {
+    public Boolean isInviteOnly(int id) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT invite_only FROM kingdoms WHERE name = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, name);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT invite_only FROM kingdoms WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps.setInt(1, id);                                             // YOU MUST put these into this line!! And depending on how many
             rs = ps.executeQuery();
             return rs.getBoolean(1);
         } catch (SQLException ex) {
