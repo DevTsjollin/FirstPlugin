@@ -1,6 +1,7 @@
-package me.tsjollin.firstplugin.entity;
+package me.tsjollin.kingdoms.entity;
 
-import me.tsjollin.firstplugin.Main;
+import me.tsjollin.kingdoms.Main;
+import me.tsjollin.kingdoms.listeners.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -36,6 +37,32 @@ public class Kingdom {
     }
     public Boolean isInviteOnly() {
         return Main.getKDDatabase().isInviteOnly(id);
+    }
+    public String getPrefix() {
+        if (Main.getKDDatabase().getPrefix(id) == null) {
+            return "";
+        } else {
+            return Main.getKDDatabase().getPrefix(id);
+        }
+    }
+    public void setPrefix(String prefix) {
+        if (prefix.equalsIgnoreCase( "null")) prefix = null;
+
+        Main.getKDDatabase().setPrefix(id, prefix);
+        TeamManager.updatePrefix(this);
+    }
+    public String getSuffix() {
+        if (Main.getKDDatabase().getSuffix(id) == null) {
+            return "";
+        } else {
+            return Main.getKDDatabase().getSuffix(id);
+        }
+    }
+    public void setSuffix(String suffix) {
+        if (suffix.equalsIgnoreCase( "null")) suffix = null;
+
+        Main.getKDDatabase().setSuffix(id, suffix);
+        TeamManager.updateSuffix(this);
     }
     public List<Player> getOnlinePlayers() {
         List<Player> players = new ArrayList<Player>();

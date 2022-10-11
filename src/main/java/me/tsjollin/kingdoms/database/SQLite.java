@@ -1,4 +1,4 @@
-package me.tsjollin.firstplugin.database;
+package me.tsjollin.kingdoms.database;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 
-import me.tsjollin.firstplugin.Main;
-import me.tsjollin.firstplugin.database.Database;
+import me.tsjollin.kingdoms.Main;
 
 public class SQLite extends Database{
     String dbname;
@@ -21,6 +20,8 @@ public class SQLite extends Database{
     public String SQLiteCreateKingdomTable = "CREATE TABLE IF NOT EXISTS kingdoms (" +
             "`id` INTEGER PRIMARY KEY AUTOINCREMENT," +
             "`name` varchar(255) NOT NULL," +
+            "`prefix` varchar(255)," +
+            "`suffix` varchar(255)," +
             "`spawn` varchar(255)," +
             "`invite_only` tinyint(1) DEFAULT 0" +
             ");";

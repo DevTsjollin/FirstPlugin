@@ -1,4 +1,4 @@
-package me.tsjollin.firstplugin.util;
+package me.tsjollin.kingdoms.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;

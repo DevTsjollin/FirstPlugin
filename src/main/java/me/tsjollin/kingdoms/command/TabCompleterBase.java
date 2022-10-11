@@ -1,4 +1,4 @@
-package me.tsjollin.firstplugin.command;
+package me.tsjollin.kingdoms.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.TabCompleter;

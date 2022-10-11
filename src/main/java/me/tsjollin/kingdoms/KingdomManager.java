@@ -1,7 +1,9 @@
-package me.tsjollin.firstplugin.database;
+package me.tsjollin.kingdoms;
 
-import me.tsjollin.firstplugin.Main;
-import me.tsjollin.firstplugin.entity.Kingdom;
+import me.tsjollin.kingdoms.Main;
+import me.tsjollin.kingdoms.entity.Kingdom;
+import me.tsjollin.kingdoms.listeners.TeamManager;
+import org.bukkit.scoreboard.Team;
 
 import java.util.List;
 
@@ -14,9 +16,11 @@ public class KingdomManager {
     }
     public static void createKingdom(String name) {
         Main.getKDDatabase().createKingdom(name);
+        TeamManager.deleteTeam(name);
     }
     public static void deleteKingdom(String name) {
         Main.getKDDatabase().deleteKingdom(name);
+        TeamManager.deleteTeam(name);
     }
     public static Kingdom getKingdom(int id) {
         return new Kingdom(id);

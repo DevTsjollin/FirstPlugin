@@ -1,6 +1,6 @@
-package me.tsjollin.firstplugin.event;
+package me.tsjollin.kingdoms.listeners;
 
-import me.tsjollin.firstplugin.entity.PlatformPlayer;
+import me.tsjollin.kingdoms.entity.PlatformPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,5 +14,6 @@ public class onJoinEvent implements Listener {
         if(!platformPlayer.playerExists()) {
             platformPlayer.createPlayer();
         }
+        TeamManager.updatePlayer(player);
     }
 }

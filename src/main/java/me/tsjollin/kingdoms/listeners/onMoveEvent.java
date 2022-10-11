@@ -1,6 +1,6 @@
-package me.tsjollin.firstplugin.event;
+package me.tsjollin.kingdoms.listeners;
 
-import me.tsjollin.firstplugin.util.Teleporter;
+import me.tsjollin.kingdoms.util.Teleporter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;

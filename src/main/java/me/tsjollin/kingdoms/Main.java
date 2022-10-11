@@ -1,15 +1,15 @@
-package me.tsjollin.firstplugin;
+package me.tsjollin.kingdoms;
 
-import me.tsjollin.firstplugin.command.CommandKingdom;
-import me.tsjollin.firstplugin.database.Database;
-import me.tsjollin.firstplugin.database.SQLite;
-import me.tsjollin.firstplugin.event.onJoinEvent;
-import me.tsjollin.firstplugin.event.onMoveEvent;
+import me.tsjollin.kingdoms.command.CommandKingdom;
+import me.tsjollin.kingdoms.database.Database;
+import me.tsjollin.kingdoms.database.SQLite;
+import me.tsjollin.kingdoms.listeners.TeamManager;
+import me.tsjollin.kingdoms.listeners.onJoinEvent;
+import me.tsjollin.kingdoms.listeners.onMoveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -28,6 +28,7 @@ public class Main extends JavaPlugin {
         this.db.load();
         registerCommands();
         registerEvents();
+        TeamManager.createTeams();
     }
 
     @Override

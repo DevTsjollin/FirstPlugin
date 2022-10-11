@@ -1,9 +1,9 @@
-name: FirstPlugin
+name: Kingdoms
 version: '${project.version}'
-main: me.tsjollin.firstplugin.Main
+main: me.tsjollin.kingdoms.Main
 api-version: 1.19
 authors: [ Tsjollin ]
-description: First Plugin
+description: Kingdom Plugin
 commands:
   kingdom:
     description: Kingdom shit

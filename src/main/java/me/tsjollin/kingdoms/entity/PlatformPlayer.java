@@ -1,6 +1,7 @@
-package me.tsjollin.firstplugin.entity;
+package me.tsjollin.kingdoms.entity;
 
-import me.tsjollin.firstplugin.Main;
+import me.tsjollin.kingdoms.Main;
+import me.tsjollin.kingdoms.listeners.TeamManager;
 import org.bukkit.entity.Player;
 
 public class PlatformPlayer {
@@ -10,6 +11,9 @@ public class PlatformPlayer {
     public PlatformPlayer(Player player) {
         this.player = player;
         this.UUID = player.getUniqueId().toString();
+    }
+    public Player getPlayer() {
+        return player;
     }
     public Boolean playerExists() {
         return Main.getKDDatabase().playerExists(UUID);
@@ -26,6 +30,7 @@ public class PlatformPlayer {
     }
     public void setKingdom(Integer id) {
         Main.getKDDatabase().setKingdom(UUID, id);
+        TeamManager.updatePlayer(this.player);
     }
     public Boolean isInKingdom() {
         return Main.getKDDatabase().isInKingdom(UUID);

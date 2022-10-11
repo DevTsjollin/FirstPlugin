@@ -1,19 +1,13 @@
-package me.tsjollin.firstplugin.database;
+package me.tsjollin.kingdoms.database;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type;
-import me.tsjollin.firstplugin.Main;
-import me.tsjollin.firstplugin.util.Utils;
+import me.tsjollin.kingdoms.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import me.tsjollin.firstplugin.database.Error;
-import me.tsjollin.firstplugin.database.Errors;
 
 
 public abstract class Database {
@@ -43,8 +37,9 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("INSERT INTO kingdoms (name) VALUES(?)"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, name);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("INSERT INTO kingdoms (name, prefix) VALUES(?,?)");
+            ps.setString(1, name);
+            ps.setString(2, "&7[&f" + name + "&7]");
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -66,8 +61,8 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("DELETE FROM kingdoms WHERE name = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, name);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("DELETE FROM kingdoms WHERE name = ?");
+            ps.setString(1, name);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -91,7 +86,7 @@ public abstract class Database {
         List<String> objects = new ArrayList<>();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT name FROM kingdoms"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps = conn.prepareStatement("SELECT name FROM kingdoms");
             rs = ps.executeQuery();
             while (rs.next()) {
                 objects.add((String)rs.getObject("name"));
@@ -117,8 +112,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM kingdoms WHERE name = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, name);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT * FROM kingdoms WHERE name = ?");
+            ps.setString(1, name);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return true;
@@ -144,8 +139,8 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("INSERT INTO players (id) VALUES(?)"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, UUID);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("INSERT INTO players (id) VALUES(?)");
+            ps.setString(1, UUID);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -168,8 +163,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM players WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, UUID);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT * FROM players WHERE id = ?");
+            ps.setString(1, UUID);
             rs = ps.executeQuery();
             if (rs.next()) {
                 return true;
@@ -220,8 +215,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT id FROM kingdoms WHERE name = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, name);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT id FROM kingdoms WHERE name = ?");
+            ps.setString(1, name);
             rs = ps.executeQuery();
             return rs.getInt(1);
         } catch (SQLException ex) {
@@ -244,8 +239,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT name FROM kingdoms WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setInt(1, id);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT name FROM kingdoms WHERE id = ?");
+            ps.setInt(1, id);
             rs = ps.executeQuery();
             return rs.getString(1);
         } catch (SQLException ex) {
@@ -267,13 +262,13 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE players SET kingdom_id = ? WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps = conn.prepareStatement("UPDATE players SET kingdom_id = ? WHERE id = ?");
             if (id == null) {
                 ps.setNull(1, Types.INTEGER);
             } else {
-                ps.setInt(1, id);                                             // YOU MUST put these into this line!! And depending on how many
+                ps.setInt(1, id);
             }
-            ps.setString(2, UUID);                                             // YOU MUST put these into this line!! And depending on how many
+            ps.setString(2, UUID);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -295,9 +290,9 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE kingdoms SET name = ? WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps = conn.prepareStatement("UPDATE kingdoms SET name = ? WHERE id = ?");
             ps.setString(1, name);
-            ps.setInt(2, id);                                             // YOU MUST put these into this line!! And depending on how many// YOU MUST put these into this line!! And depending on how many
+            ps.setInt(2, id);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -320,9 +315,9 @@ public abstract class Database {
         String locSerialized = loc.getWorld().getName() + ", " + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + ", " + loc.getPitch() + ", " + loc.getYaw();
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE kingdoms SET spawn = ? WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps = conn.prepareStatement("UPDATE kingdoms SET spawn = ? WHERE id = ?");
             ps.setString(1, locSerialized);
-            ps.setInt(2, id);                                             // YOU MUST put these into this line!! And depending on how many// YOU MUST put these into this line!! And depending on how many
+            ps.setInt(2, id);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -345,8 +340,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT spawn FROM kingdoms WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setInt(1, id);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT spawn FROM kingdoms WHERE id = ?");
+            ps.setInt(1, id);
             rs = ps.executeQuery();
             if (rs.getString(1) == null) return null;
             String[] locString = rs.getString(1).split(",");
@@ -372,8 +367,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT kingdom_id FROM players WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, UUID);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT kingdom_id FROM players WHERE id = ?");
+            ps.setString(1, UUID);
             rs = ps.executeQuery();
             if ((Integer)rs.getInt(1) == 0) {
                 return false;
@@ -399,9 +394,9 @@ public abstract class Database {
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE kingdoms SET invite_only = ? WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
+            ps = conn.prepareStatement("UPDATE kingdoms SET invite_only = ? WHERE id = ?");
             ps.setBoolean(1, value);
-            ps.setInt(2, id);                                             // YOU MUST put these into this line!! And depending on how many// YOU MUST put these into this line!! And depending on how many
+            ps.setInt(2, id);
             ps.executeUpdate();
             return;
         } catch (SQLException ex) {
@@ -424,8 +419,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT invite_only FROM kingdoms WHERE id = ?"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setInt(1, id);                                             // YOU MUST put these into this line!! And depending on how many
+            ps = conn.prepareStatement("SELECT invite_only FROM kingdoms WHERE id = ?");
+            ps.setInt(1, id);
             rs = ps.executeQuery();
             return rs.getBoolean(1);
         } catch (SQLException ex) {
@@ -441,6 +436,110 @@ public abstract class Database {
             }
         }
         return null;
+    }
+    public String getPrefix(int id) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT prefix FROM kingdoms WHERE id = ?");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            return rs.getString(1);
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return null;
+    }
+    public void setPrefix(int id, String prefix) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("UPDATE kingdoms SET prefix = ? WHERE id = ?");
+            if (prefix == null) {
+                ps.setNull(1, Types.VARCHAR);
+            } else {
+                ps.setString(1, prefix);
+            }
+            ps.setInt(2, id);
+            ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;
+    }
+    public String getSuffix(int id) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("SELECT suffix FROM kingdoms WHERE id = ?");
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            return rs.getString(1);
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return null;
+    }
+    public void setSuffix(int id, String suffix) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = getSQLConnection();
+            ps = conn.prepareStatement("UPDATE kingdoms SET suffix = ? WHERE id = ?");
+            if (suffix == null) {
+                ps.setNull(1, Types.VARCHAR);
+            } else {
+                ps.setString(1, suffix);
+            }
+            ps.setInt(2, id);
+            ps.executeUpdate();
+            return;
+        } catch (SQLException ex) {
+            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
+        } finally {
+            try {
+                if (ps != null)
+                    ps.close();
+                if (conn != null)
+                    conn.close();
+            } catch (SQLException ex) {
+                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
+            }
+        }
+        return;
     }
     public void close(PreparedStatement ps,ResultSet rs){
         try {

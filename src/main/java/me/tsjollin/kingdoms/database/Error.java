@@ -1,6 +1,6 @@
-package me.tsjollin.firstplugin.database;
+package me.tsjollin.kingdoms.database;
 
-import me.tsjollin.firstplugin.Main;
+import me.tsjollin.kingdoms.Main;
 
 import java.util.logging.Level;
 

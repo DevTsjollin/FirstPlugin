@@ -1,4 +1,4 @@
-package me.tsjollin.firstplugin.database;
+package me.tsjollin.kingdoms.database;
 
 public class Errors {
     public static String sqlConnectionExecute(){

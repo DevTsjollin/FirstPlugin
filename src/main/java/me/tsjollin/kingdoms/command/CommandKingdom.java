@@ -1,12 +1,12 @@
-package me.tsjollin.firstplugin.command;
+package me.tsjollin.kingdoms.command;
 
-import me.tsjollin.firstplugin.C;
-import me.tsjollin.firstplugin.Main;
-import me.tsjollin.firstplugin.database.KingdomManager;
-import me.tsjollin.firstplugin.entity.Kingdom;
-import me.tsjollin.firstplugin.entity.PlatformPlayer;
-import me.tsjollin.firstplugin.util.Teleporter;
-import me.tsjollin.firstplugin.util.Utils;
+import me.tsjollin.kingdoms.util.C;
+import me.tsjollin.kingdoms.Main;
+import me.tsjollin.kingdoms.KingdomManager;
+import me.tsjollin.kingdoms.entity.Kingdom;
+import me.tsjollin.kingdoms.entity.PlatformPlayer;
+import me.tsjollin.kingdoms.util.Teleporter;
+import me.tsjollin.kingdoms.util.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +21,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(C.TAC("&aFor help, type &2/" + alias.toLowerCase() + " help"));
+            sender.sendMessage(C.TACWithPrefix("&aFor help, type &2/" + alias.toLowerCase() + " help"));
             return true;
         }
 
@@ -32,7 +32,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
 
         SubCommand subCommand = Utils.valueOfFormattedName(args[0], SubCommand.class);
         if (subCommand == null) {
-            sender.sendMessage(C.TAC("&aFor help, type &2/" + alias.toLowerCase() + " help"));
+            sender.sendMessage(C.TACWithPrefix("&aFor help, type &2/" + alias.toLowerCase() + " help"));
             return true;
         }
 
@@ -71,59 +71,59 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
     }
     private static void createKingdom(CommandSender sender, String alias, String[] args) {
         if (args.length <= 1) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " create <name>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " create <name>"));
             return;
         }
 
         String kingdomName = args[1].toLowerCase();
         if (KingdomManager.kingdomExists(kingdomName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &calready exists!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdomName + " &calready exists!"));
             return;
         }
 
         if (args[1].equalsIgnoreCase("confirm")) {
-            sender.sendMessage(C.TAC("&cInvalid kingdom name!"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid kingdom name!"));
             return;
         }
 
-        sender.sendMessage(C.TAC("&aSuccessfully created kingdom: &2" + kingdomName + "&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aSuccessfully created kingdom: &2" + kingdomName + "&a!"));
 
         KingdomManager.createKingdom(kingdomName);
     }
     private static void deleteKingdom(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
         if (args.length <= 1) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " delete <name>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " delete <name>"));
             return;
         }
 
         if (args[1].equalsIgnoreCase("confirm")) {
             if (!confirmDeleteKingdomList.containsKey(player.getUniqueId())) {
-                sender.sendMessage(C.TAC("&cYou don't have any confirmation!"));
+                sender.sendMessage(C.TACWithPrefix("&cYou don't have any confirmation!"));
                 return;
             }
 
             String kingdom = confirmDeleteKingdomList.get(player.getUniqueId());
 
             if (!KingdomManager.kingdomExists(kingdom)) {
-                sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist anymore!"));
+                sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdom + " &cdoes not exist anymore!"));
                 return;
             }
 
             confirmDeleteKingdomList.remove(player.getUniqueId());
-            sender.sendMessage(C.TAC("&aSuccessfully deleted kingdom: &2" + kingdom + "&a!"));
+            sender.sendMessage(C.TACWithPrefix("&aSuccessfully deleted kingdom: &2" + kingdom + "&a!"));
 
             KingdomManager.deleteKingdom(kingdom);
         } else {
             String kingdom = args[1].toLowerCase();
 
             if (!KingdomManager.kingdomExists(kingdom)) {
-                sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
+                sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdom + " &cdoes not exist!"));
                 return;
             }
 
             confirmDeleteKingdomList.put(player.getUniqueId(), kingdom);
-            sender.sendMessage(C.TAC("&aType: &2/" + alias + " delete confirm &ato delete &2" + kingdom + "&a!"));
+            sender.sendMessage(C.TACWithPrefix("&aType: &2/" + alias + " delete confirm &ato delete &2" + kingdom + "&a!"));
 
             Bukkit.getScheduler().runTaskLater(Main.getInstance(), new Runnable() {
                 @Override
@@ -138,7 +138,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         String kingdomList = "";
 
         if (kingdoms.isEmpty()) {
-            sender.sendMessage(C.TAC("&7No kingdoms found!"));
+            sender.sendMessage(C.TACWithPrefix("&7No kingdoms found!"));
             return;
         }
 
@@ -150,34 +150,34 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
             kingdomList += kingdoms.get(i) + "&a, &2";
         }
 
-        sender.sendMessage(C.TAC("&aList of kingdoms: &2" + kingdomList));
+        sender.sendMessage(C.TACWithPrefix("&aList of kingdoms: &2" + kingdomList));
     }
     private static void joinKingdom(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
         PlatformPlayer platformPlayer = new PlatformPlayer(player);
-        String UUID = player.getUniqueId().toString();
+
         if (args.length <= 1) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " join <name>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " join <name>"));
             return;
         }
 
         String kingdomName = args[1].toLowerCase();
         if (platformPlayer.isInKingdom()) {
-            sender.sendMessage(C.TAC("&aYou are already in a kingdom!"));
+            sender.sendMessage(C.TACWithPrefix("&aYou are already in a kingdom!"));
             return;
         }
 
         if (!KingdomManager.kingdomExists(kingdomName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
         Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
         if (kingdom.isInviteOnly()) { // and has no invite
-            sender.sendMessage(C.TAC("&aYou need an invite to join &2" + kingdomName + "&a!"));
+            sender.sendMessage(C.TACWithPrefix("&aYou need an invite to join &2" + kingdomName + "&a!"));
             return;
         }
-        sender.sendMessage(C.TAC("&aYou joined: &2" + kingdomName + "&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aYou joined: &2" + kingdomName + "&a!"));
         platformPlayer.setKingdom(kingdom.getId());
     }
     private static void leaveKingdom(CommandSender sender) {
@@ -185,62 +185,60 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
         if (!platformPlayer.isInKingdom()) {
-            sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
+            sender.sendMessage(C.TACWithPrefix("&cYou are currently not in a kingdom!"));
             return;
         }
 
-        sender.sendMessage(C.TAC("&aYou left: &2" + platformPlayer.getKingdom().getName() + "&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aYou left: &2" + platformPlayer.getKingdom().getName() + "&a!"));
         platformPlayer.setKingdom(null);
     }
     private static void renameKingdom(CommandSender sender, String alias, String[] args) {
         if (args.length <= 2) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " rename <oldname> <newname>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " rename <oldname> <newname>"));
             return;
         }
 
         String kingdomName = args[1].toLowerCase();
 
         if (!KingdomManager.kingdomExists(kingdomName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
         String newName = args[2].toLowerCase();
         if (KingdomManager.kingdomExists(newName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + newName + " &calready exists!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + newName + " &calready exists!"));
             return;
         }
 
         if (newName.equalsIgnoreCase("confirm")) {
-            sender.sendMessage(C.TAC("&cInvalid kingdom name!"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid kingdom name!"));
             return;
         }
 
         Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
-        sender.sendMessage(C.TAC("&aRenamed the kingdom: &2" + kingdom.getName() + " &ato &2" + newName +"&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aRenamed the kingdom: &2" + kingdom.getName() + " &ato &2" + newName +"&a!"));
         kingdom.renameKingdom(newName);
     }
 
     private static void setKingdomSpawn(CommandSender sender, String alias, String[] args) {
         Player player = (Player) sender;
-        String UUID = player.getUniqueId().toString();
-        PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
         if (args.length <= 1) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " setspawn <name>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " setspawn <name>"));
             return;
         }
 
         String kingdomName = args[1].toLowerCase();
         if (!KingdomManager.kingdomExists(kingdomName)) {
-            sender.sendMessage(C.TAC("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom &4" + kingdomName + " &cdoes not exist!"));
             return;
         }
 
         Location location = Utils.roundLocation(player.getLocation());
         Kingdom kingdom = KingdomManager.getKingdom(kingdomName);
 
-        sender.sendMessage(C.TAC("&aYou changed the spawn of: &2" + kingdom.getName() + "&a to &2" + location.getX() + ", " + location.getY() + ", " + location.getZ() +"&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aYou changed the spawn of: &2" + kingdom.getName() + "&a to &2" + location.getX() + ", " + location.getY() + ", " + location.getZ() +"&a!"));
         kingdom.setSpawn(location);
     }
     private static void kingdomSpawn(CommandSender sender) {
@@ -248,12 +246,12 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         PlatformPlayer platformPlayer = new PlatformPlayer(player);
 
         if (!platformPlayer.isInKingdom()) {
-            sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
+            sender.sendMessage(C.TACWithPrefix("&cYou are currently not in a kingdom!"));
             return;
         }
 
         if (platformPlayer.getKingdom().getSpawn() == null) {
-            sender.sendMessage(C.TAC("&cThe kingdom spawn has not been setup yet!"));
+            sender.sendMessage(C.TACWithPrefix("&cThe kingdom spawn has not been setup yet!"));
             return;
         }
 
@@ -263,7 +261,7 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         Player player = (Player) sender;
         PlatformPlayer platformPlayer = new PlatformPlayer(player);
         if (!platformPlayer.isInKingdom()) {
-            sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
+            sender.sendMessage(C.TACWithPrefix("&cYou are currently not in a kingdom!"));
             return;
         }
         sender.sendMessage(platformPlayer.getKingdom().getName());
@@ -272,24 +270,31 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         Player player = (Player) sender;
         PlatformPlayer platformPlayer = new PlatformPlayer(player);
         if (args.length <= 2) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " edit <option> <value>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " edit <option> <value>"));
             return;
         }
 
         if (!platformPlayer.isInKingdom()) {
-            sender.sendMessage(C.TAC("&cYou are currently not in a kingdom!"));
+            sender.sendMessage(C.TACWithPrefix("&cYou are currently not in a kingdom!"));
             return;
         }
 
         EditOperation editOperation = Utils.valueOfFormattedName(args[1], EditOperation.class);
         if (editOperation == null) {
-            sender.sendMessage(C.TAC("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " edit <option> <value>"));
+            sender.sendMessage(C.TACWithPrefix("&cInvalid arguments, try: &4/" + alias.toLowerCase() + " edit <option> <value>"));
             return;
         }
 
         switch (editOperation) {
             case INVITEONLY:
                 editInviteOnly(sender, alias, args);
+                break;
+            case PREFIX:
+                editPrefix(sender, alias, args);
+                break;
+            case SUFFIX:
+                editSuffix(sender, alias, args);
+                break;
         }
     }
     private static void editInviteOnly(CommandSender sender, String alias, String[] args) {
@@ -298,11 +303,27 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         InviteOnlyValues value = Utils.valueOfFormattedName(args[2], InviteOnlyValues.class);
 
         if (value == null) {
-            sender.sendMessage(C.TAC("&4" + args[2] + " &cis not a valid, must be &4true &cor &4false&c!"));
+            sender.sendMessage(C.TACWithPrefix("&4" + args[2] + " &cis not a valid, must be &4true &cor &4false&c!"));
             return;
         }
-        sender.sendMessage(C.TAC("&aChanged invite only of your kingdom to &2" + value.toString().toLowerCase() + "&a!"));
+        sender.sendMessage(C.TACWithPrefix("&aChanged invite only of your kingdom to &2" + value.toString().toLowerCase() + "&a!"));
         platformPlayer.getKingdom().setInviteOnly(Boolean.parseBoolean(value.toString().toLowerCase()));
+
+    }
+    private static void editPrefix(CommandSender sender, String alias, String[] args) {
+        Player player = (Player) sender;
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
+
+        sender.sendMessage(C.TACWithPrefix("&aChanged prefix of your kingdom to &7" + args[2]));
+        platformPlayer.getKingdom().setPrefix(args[2]);
+
+    }
+    private static void editSuffix(CommandSender sender, String alias, String[] args) {
+        Player player = (Player) sender;
+        PlatformPlayer platformPlayer = new PlatformPlayer(player);
+
+        sender.sendMessage(C.TACWithPrefix("&aChanged suffix of your kingdom to &7" + args[2]));
+        platformPlayer.getKingdom().setSuffix(args[2]);
 
     }
     @Override
@@ -331,11 +352,15 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
                     return filterStartingWith(args[1], Stream.of(EditOperation.VALUES).map(Utils::formattedName));
             }
         }
-        switch (subCommand) {
-            case EDIT:
-                if (args.length == 3) {
+        if (args.length == 3) {
+            EditOperation editOperation = Utils.valueOfFormattedName(args[1], EditOperation.class);
+            switch (editOperation) {
+                case INVITEONLY:
                     return filterStartingWith(args[2], Stream.of(InviteOnlyValues.VALUES).map(Utils::formattedName));
-                }
+                case PREFIX:
+                case SUFFIX:
+                    return filterStartingWith(args[2], Stream.of(NullValue.VALUES).map(Utils::formattedName));
+            }
         }
         return Collections.emptyList();
     }
@@ -353,5 +378,10 @@ public class CommandKingdom extends TabCompleterBase implements CommandExecutor 
         TRUE, FALSE;
 
         static final InviteOnlyValues[] VALUES = values();
+    }
+    private enum NullValue {
+        NULL;
+
+        static final NullValue[] VALUES = values();
     }
 }
