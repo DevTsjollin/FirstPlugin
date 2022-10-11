@@ -2,7 +2,7 @@ package me.tsjollin.kingdoms.command;
 
 import me.tsjollin.kingdoms.util.C;
 import me.tsjollin.kingdoms.Main;
-import me.tsjollin.kingdoms.KingdomManager;
+import me.tsjollin.kingdoms.managers.KingdomManager;
 import me.tsjollin.kingdoms.entity.Kingdom;
 import me.tsjollin.kingdoms.entity.PlatformPlayer;
 import me.tsjollin.kingdoms.util.Teleporter;

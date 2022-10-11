@@ -1,5 +1,6 @@
 package me.tsjollin.kingdoms.listeners;
 
+import me.tsjollin.kingdoms.managers.TeamManager;
 import me.tsjollin.kingdoms.entity.PlatformPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

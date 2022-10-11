@@ -1,7 +1,6 @@
-package me.tsjollin.kingdoms.listeners;
+package me.tsjollin.kingdoms.managers;
 
-import me.tsjollin.kingdoms.KingdomManager;
-import me.tsjollin.kingdoms.Main;
+import me.tsjollin.kingdoms.managers.KingdomManager;
 import me.tsjollin.kingdoms.entity.Kingdom;
 import me.tsjollin.kingdoms.entity.PlatformPlayer;
 import me.tsjollin.kingdoms.util.C;

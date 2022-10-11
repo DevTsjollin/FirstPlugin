@@ -1,9 +1,7 @@
-package me.tsjollin.kingdoms;
+package me.tsjollin.kingdoms.managers;
 
 import me.tsjollin.kingdoms.Main;
 import me.tsjollin.kingdoms.entity.Kingdom;
-import me.tsjollin.kingdoms.listeners.TeamManager;
-import org.bukkit.scoreboard.Team;
 
 import java.util.List;
 

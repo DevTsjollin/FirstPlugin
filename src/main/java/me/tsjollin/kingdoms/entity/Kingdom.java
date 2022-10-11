@@ -1,7 +1,7 @@
 package me.tsjollin.kingdoms.entity;
 
 import me.tsjollin.kingdoms.Main;
-import me.tsjollin.kingdoms.listeners.TeamManager;
+import me.tsjollin.kingdoms.managers.TeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
